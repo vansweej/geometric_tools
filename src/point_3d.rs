@@ -34,6 +34,7 @@ impl<T: Scalar + Float> From<[T; 3]> for Point3D<T> {
     }
 }
 
+// remove !! worthless !!!
 impl<T: Scalar + Float + ConvertFp> Hash for Point3D<T> {
     #[inline(always)]
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -98,10 +99,27 @@ mod tests {
 
         let d: Point3D<f32> = Default::default();
         println!("{:?}", d);
+    }
 
-        let mut hasher = DefaultHasher::new();
-        f.hash(&mut hasher);
-        println!("{:?}", hasher.finish());
+    #[test]
+    fn test_hasher() {
+        let f1: Point3D<f32> = Point3D::new(0.0, 3.4, 2.3);
+        println!("{:?}", f1);
+
+        let f2: Point3D<f32> = Point3D::new(0.0, 3.4, 2.3000001);
+        println!("{:?}", f2);
+
+
+        let mut hasher1 = DefaultHasher::new();
+        f1.hash(&mut hasher1);
+        println!("{:?}", hasher1.finish());
+
+        let mut hasher2 = DefaultHasher::new();
+        f2.hash(&mut hasher2);
+        println!("{:?}", hasher2.finish());
+
+        assert_eq!(f1, f2);
 
     }
+
 }

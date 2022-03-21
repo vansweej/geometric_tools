@@ -1,7 +1,8 @@
 use std::marker::PhantomData;
 use std::ops::AddAssign;
+use std::ops::Index;
 use nalgebra::Scalar;
-use num_traits::Float;
+use num_traits::{Float, Unsigned};
 use crate::is_3d::Is3D;
 use crate::movable_3d::Movable3D;
 use crate::point_3d::Point3D;
@@ -22,7 +23,7 @@ where
     T: Scalar + Float,
     U: Is3D<T>
 {
-    fn new() -> Self {
+    pub fn new() -> Self {
         PointCloud3D {
             data: Vec::new(),
             _phantom: Default::default(),
@@ -50,8 +51,17 @@ where
     }
 }
 
-type F32PointCloud3D = PointCloud3D::<f32, Point3D<f32>>;
-type F64PointCloud3D = PointCloud3D::<f64, Point3D<f64>>;
+impl<T, U> Index<usize> for PointCloud3D<T, U>
+where
+    T: Scalar + Float,
+    U: Is3D<T>,
+{
+    type Output = U;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[index]
+    }
+}
 
 impl<T, U> IntoIterator for PointCloud3D<T, U>
 where
@@ -77,6 +87,10 @@ where
         }
     }
 }
+
+type F32PointCloud3D = PointCloud3D::<f32, Point3D<f32>>;
+type F64PointCloud3D = PointCloud3D::<f64, Point3D<f64>>;
+
 
 #[cfg(test)]
 mod tests {
